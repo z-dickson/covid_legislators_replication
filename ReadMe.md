@@ -21,12 +21,11 @@ format:
 
 **Journal:** *Political Communication* 
 
-\bigskip 
-\bigskip
+
 
 To run the entire analysis, you will need to have R and Python installed on your machine. 
 
-\bigskip
+
 
 There are six files necessary for replication that are in the main directory:
 
@@ -106,7 +105,7 @@ All data are in .csv format. The data includes the following files:
 
 
 
-\newpage 
+
 
 ## Additional Notes: 
 
