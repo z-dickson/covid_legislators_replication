@@ -16,17 +16,20 @@ def run_r_script(r_file):
         raise RuntimeError(f"Error executing R script: {error_message}")
 
 def run_python_script(python_file):
-    py_reqs = subprocess.run(['python', 'requirements.py'], capture_output=True, text=True)
-    if py_reqs.returncode != 0:
-        # Python requirements installation failed
-        error_message = py_reqs.stderr.strip()  # Get the error message
-        raise RuntimeError(f"Error installing Python requirements: {error_message}")
-
     result = subprocess.run(['python', python_file], capture_output=True, text=True)
     if result.returncode != 0:
         # Python script execution failed
         error_message = result.stderr.strip()  # Get the error message
         raise RuntimeError(f"Error executing Python script: {error_message}")
+
+
+
+def install_python_requirements(requirements_file):
+    try:
+        subprocess.check_call(['pip', 'install', '-r', requirements_file])
+    except subprocess.CalledProcessError as e:
+        print(f"Error installing requirements from {requirements_file}: {e}")
+        raise
 
 
 
@@ -36,6 +39,8 @@ if __name__ == "__main__":
     # Run your R and Python scripts
     r_file = "analysis.R"
     python_file = "figures.py"
+    requirements_file = "py_requirements.txt"  # Path to your requirements file
+    install_python_requirements(requirements_file)
     
     try:
         run_r_script(r_file)
