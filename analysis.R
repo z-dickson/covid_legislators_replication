@@ -33,7 +33,7 @@ estimate <- function(data, formula, seed, estimator) {
        # however fixed effects estimates are very similar and are significantly faster to compute. 
        seed = seed,
        index = c("entity_id", "time_id"),
-       r = c(0, 10),
+       r = c(0, 5),
        k = 10,
        min.T0 = 1,
        CV = TRUE,
