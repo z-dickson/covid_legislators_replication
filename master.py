@@ -1,47 +1,43 @@
-import time
-import os
 import subprocess
+import time
+import os 
 
+def run_r_script(r_file):
+    r_reqs = subprocess.run(['Rscript', 'requirements.R'], capture_output=True, text=True)
+    result = subprocess.run(['Rscript', r_file], capture_output=True, text=True)
+    if result.returncode != 0 or r_reqs.returncode != 0:
+        # R script execution failed
+        error_message = result.stderr.strip()  # Get the error message
+        raise RuntimeError(f"Error executing R script: {error_message}")
 
-# Record the start time
-start_time = time.time()  
+def run_python_script(python_file):
+    py_reqs = subprocess.run(['python', 'requirements.py'], capture_output=True, text=True)
+    result = subprocess.run(['python', python_file], capture_output=True, text=True)
+    if result.returncode != 0 or py_reqs.returncode != 0:
+        # Python script execution failed
+        error_message = result.stderr.strip()  # Get the error message
+        raise RuntimeError(f"Error executing Python script: {error_message}")
 
-
-try: 
-    # install R packages 
-    subprocess.run(['Rscript', 'requirements.R'], check=True)
+if __name__ == "__main__":
+    start_time = time.time()  # Record the start time
     
-    # run R script
-    r_process = subprocess.run(['Rscript', 'analysis.R'], capture_output=True, text=True)
+    # Run your R and Python scripts
+    r_file = "analysis.R"
+    python_file = "figures.py"
     
-    # check for errors 
-    if r_process.returncode !=0:
-        print('Error running R script:')
-        print(r_process.stderr)
-        print('Try running the files individually from the `individual_files` folder')
+    try:
+        run_r_script(r_file)
+        run_python_script(python_file)
+    except RuntimeError as e:
+        print(e)  # Print the error message
+        # Handle the error or exit the program
+        # Example: sys.exit(1) to exit with a non-zero status code
     
-    # install python packages 
-    subprocess.run(['python', 'requirements.py'], check=True)
-    
-    
-    py_process = subprocess.run(['python', 'analysis.py'], capture_output=True, text=True)
-    
-    if py_process.returncode !=0:
-        print('Error running Python script:')
-        print(py_process.stderr)
-        print('Try running the file as a notebook using the `.ipynb` file in the `individual_files` folder')
-    
-    # Record the end time
-    end_time = time.time()  
+    end_time = time.time()  # Record the end time
     execution_time = end_time - start_time  # Calculate the total execution time
     print(f"All scripts executed successfully in {execution_time:.2f} seconds.")
-    
-    
-except Exception as e:
-    print('Error running scripts:')
-    print(e)
-    print('Try running the files individually from the `individual_files` folder')
-    
+
+
 
 
 
