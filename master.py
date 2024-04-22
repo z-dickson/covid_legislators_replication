@@ -30,6 +30,7 @@ if __name__ == "__main__":
         run_python_script(python_file)
     except RuntimeError as e:
         print(e)  # Print the error message
+        raise # break 
         # Handle the error or exit the program
         # Example: sys.exit(1) to exit with a non-zero status code
     
