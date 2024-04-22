@@ -40,10 +40,11 @@ if __name__ == "__main__":
     r_file = "analysis.R"
     python_file = "figures.py"
     requirements_file = "py_requirements.txt"  # Path to your requirements file
-    install_python_requirements(requirements_file)
+    
     
     try:
         run_r_script(r_file)
+        install_python_requirements(requirements_file)
         run_python_script(python_file)
     except RuntimeError as e:
         print(e)  # Print the error message
