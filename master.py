@@ -8,12 +8,13 @@ def run_r_script(r_file):
         # R requirements installation failed
         error_message = r_reqs.stderr.strip()  # Get the error message
         raise RuntimeError(f"Error installing R requirements: {error_message}")
-
     result = subprocess.run(['Rscript', r_file], capture_output=True, text=True)
     if result.returncode != 0:
         # R script execution failed
         error_message = result.stderr.strip()  # Get the error message
         raise RuntimeError(f"Error executing R script: {error_message}")
+
+
 
 def run_python_script(python_file):
     result = subprocess.run(['python', python_file], capture_output=True, text=True)
@@ -21,7 +22,6 @@ def run_python_script(python_file):
         # Python script execution failed
         error_message = result.stderr.strip()  # Get the error message
         raise RuntimeError(f"Error executing Python script: {error_message}")
-
 
 
 def install_python_requirements(requirements_file):
