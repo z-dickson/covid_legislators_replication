@@ -25,8 +25,6 @@ format:
 
 To run the entire analysis, you will need to have R and Python installed on your machine. 
 
-
-
 There are eight files necessary for replication that are in the main directory:
 
 1. `master.py` - This file runs the entire analysis.
@@ -38,9 +36,7 @@ There are eight files necessary for replication that are in the main directory:
 7. `requirements.py` - Python library requirements 
 8. `requirements.R` - R library requirements 
 
-
-
-The entire analysis can be run from the `master.py` file. Navigate to the directory and run the following in your terminal: 
+Additionally, there are two folders with contain the individuals scripts for the analysis (`individual_files`) and all the compiled files (`compiled_files`). If these are not of interest, you can delete both folders and just compile the entire replication using the `master.py` file. Clone the repo, navigate to the new directory and run the following in your terminal: 
 
 ```python3 master.py```
 
@@ -49,6 +45,7 @@ The entire analysis can be run from the `master.py` file. Navigate to the direct
 **Notes:**
 
 - The master file calls the two analysis files in R and Python. The R file estimates the primary model using matrix completion, and the Python file creates the figures and tables. These files will save the results in the main directory. 
+- There are also two requirements files for each language. 
 - There are two folders in which the individual analysis files are broken up by the type of analysis (`individual_files`) and one that contains all compiled files (`compiled_files`). These files are further detailed below. 
 - In several cases I estimate the models in R and then save the results as a csv file. I then use the csv file to create the figures in Python using the `figures.ipynb` file. 
 - I tried to set seeds where possible to ensure reproducibility, but many of the models are stochastic and may not be exactly the same as in the paper. 
