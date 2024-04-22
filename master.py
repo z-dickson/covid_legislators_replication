@@ -4,19 +4,31 @@ import os
 
 def run_r_script(r_file):
     r_reqs = subprocess.run(['Rscript', 'requirements.R'], capture_output=True, text=True)
+    if r_reqs.returncode != 0:
+        # R requirements installation failed
+        error_message = r_reqs.stderr.strip()  # Get the error message
+        raise RuntimeError(f"Error installing R requirements: {error_message}")
+
     result = subprocess.run(['Rscript', r_file], capture_output=True, text=True)
-    if result.returncode != 0 or r_reqs.returncode != 0:
+    if result.returncode != 0:
         # R script execution failed
         error_message = result.stderr.strip()  # Get the error message
         raise RuntimeError(f"Error executing R script: {error_message}")
 
 def run_python_script(python_file):
     py_reqs = subprocess.run(['python', 'requirements.py'], capture_output=True, text=True)
+    if py_reqs.returncode != 0:
+        # Python requirements installation failed
+        error_message = py_reqs.stderr.strip()  # Get the error message
+        raise RuntimeError(f"Error installing Python requirements: {error_message}")
+
     result = subprocess.run(['python', python_file], capture_output=True, text=True)
-    if result.returncode != 0 or py_reqs.returncode != 0:
+    if result.returncode != 0:
         # Python script execution failed
         error_message = result.stderr.strip()  # Get the error message
         raise RuntimeError(f"Error executing Python script: {error_message}")
+
+
 
 if __name__ == "__main__":
     start_time = time.time()  # Record the start time
@@ -37,6 +49,7 @@ if __name__ == "__main__":
     end_time = time.time()  # Record the end time
     execution_time = end_time - start_time  # Calculate the total execution time
     print(f"All scripts executed successfully in {execution_time:.2f} seconds.")
+
 
 
 
