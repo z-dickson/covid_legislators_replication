@@ -1,6 +1,6 @@
 ---
 subtitle: "Replication Instructions"
-title: "COVID-19 Infection Reduces US Congressmembers' Opposition to COVID-19 Policies"
+title: "The Effects of COVID-19 Infection on Opposition to COVID-19 Policies: Evidence from the U.S. Congress"
 author: Zach Dickson (LSE) and T. Murat Yildirim (Stavanger)
 date: "2024-04-21"
 format:
@@ -15,7 +15,7 @@ format:
 
 
 **Replication files for:** 
-*COVID-19 Infection Reduces US Congressmembers' Opposition to COVID-19 Policies*
+*The Effects of COVID-19 Infection on Opposition to COVID-19 Policies: Evidence from the U.S. Congress*
 
 **Authors:** Zach Dickson (LSE) and T. Murat Yildirim (Stavanger)
 
@@ -27,7 +27,7 @@ To run the entire analysis, you will need to have R and Python installed on your
 
 
 
-There are six files necessary for replication that are in the main directory:
+There are eight files necessary for replication that are in the main directory:
 
 1. `master.py` - This file runs the entire analysis.
 2. `analysis.R` - This file runs all R code 
@@ -35,6 +35,8 @@ There are six files necessary for replication that are in the main directory:
 4. `analysis_data.csv` - The primary dataset used in the analysis
 5. `covid_infections.csv` - The data file for COVID infections in legislators
 6. `validation_tweets.csv` - The data file for the held-out tweets used to validate the language model
+7. `requirements.py` - Python library requirements 
+8. `requirements.R` - R library requirements 
 
 
 

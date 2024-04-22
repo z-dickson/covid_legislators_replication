@@ -1,23 +1,17 @@
 
 
-# install packages if they are not already installed
 
-# List of package names to install
-packages_to_install <- c("fect", "dplyr", "kableExtra")
-
-# Check if each package is already installed
-for (package_name in packages_to_install) {
-  if (!(package_name %in% installed.packages())) {
-    # If not installed, install the package
-    install.packages(package_name)
-  }
-}
+################################ Analysis Script ################################
+### this script runs the entire analysis for # Replication code for "The Effect of COVID-19 Infection on Opposition to COVID-19 Policies: Evidence from the U.S. Congress" 
 
 
 # load packages
 library(fect)
 library(dplyr)
 library(kableExtra)
+library(modelsummary)
+library(grf)
+library(ggplot2) 
 
 
 
@@ -29,14 +23,15 @@ set.seed(42)
 data <- read.csv("analysis_data.csv")
 
 
-# create function to use the fect package to estimate effects of infection on opposition using matrix completion. All models condition on the total number of tweets. 
+# create function to use the fect package to estimate effects of infection on 
+# opposition using matrix completion. All models condition on the total number of tweets. 
 
-estimate <- function(data, formula) {
+estimate <- function(data, formula, seed, estimator) {
   fect(data = data,
        formula = formula,
-       method = "mc", ## I used MC in the text, which is more appropriate for the analysis,
+       method = estimator, ## I used MC in the text, which is more appropriate for the analysis,
        # however fixed effects estimates are very similar and are significantly faster to compute. 
-       seed = 42,
+       seed = seed,
        index = c("entity_id", "time_id"),
        r = c(0, 10),
        k = 10,
@@ -58,19 +53,27 @@ estimate <- function(data, formula) {
 
 # Table 1, column 1: IVHS transformation of DV and no controls
 mc_no_controls_IVHS <- estimate(data, 
-    asinh(opposition_tweet_count) ~ treatment + total_tweets)
+    asinh(opposition_tweet_count) ~ treatment + total_tweets, 
+    seed = 42,
+    estimator = "mc")
 
 # Table 1, column 2: Log transformation of DV and no controls
 mc_no_controls_log <- estimate(data, 
-    log(opposition_tweet_count+.1) ~ treatment + total_tweets)
+    log(opposition_tweet_count+.1) ~ treatment + total_tweets,
+    seed = 42,
+    estimator = "mc")
 
 # Table 1, column 3: No transformation of DV and Covid Cases (state level) as control
 mc_with_controls_covid_cases <- estimate(data, 
-    opposition_tweet_count ~ treatment + total_tweets + log(covid_cases))
+    opposition_tweet_count ~ treatment + total_tweets + log(covid_cases),
+    seed = 42,
+    estimator = "mc")
 
 # Table 1, column 4: No transformation of DV and Covid Cases and Deaths (state level) as controls
 mc_with_controls_covid_cases_deaths <- estimate(data, 
-    opposition_tweet_count ~ treatment + total_tweets + log(covid_cases) + log(covid_deaths))
+    opposition_tweet_count ~ treatment + total_tweets + log(covid_cases) + log(covid_deaths),
+    seed = 42,
+    estimator = "mc")
 
 
 # Create a table with the results
@@ -101,7 +104,13 @@ align = "c",
 col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths"), 
 caption.placement = "top") %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
-footnote(general = "Standard errors are presented in parentheses. All results presented use matrix completion methods and are estimated using the FECT library in R (Liu, Wang, Xu 2022). Models 1 and 2 use an inverse hyperbolic sine transformation and log+.1 transformation, respectively. Model 3 includes the number of COVID-19 cases per day in each legislator's constituency state. Model 4 includes the number of new cases and new deaths in each legislator's constituency state.") %>%
+footnote(general = "Standard errors are presented in parentheses. All results 
+presented use matrix completion methods and are estimated using the FECT 
+library in R (Liu, Wang, Xu 2022). Models 1 and 2 use an inverse hyperbolic
+ sine transformation and log+.1 transformation, respectively. Model 3 
+ includes the number of COVID-19 cases per day in each legislator's 
+ constituency state. Model 4 includes the number of new cases and new 
+ deaths in each legislator's constituency state.") %>%
 save_kable("table1.tex") ### Save the table as a .tex file in the output folder
 
 
@@ -126,10 +135,6 @@ write.csv(exit_effects, 'figure4.csv')
 
 
 # save the pre-trends equivalence test results for the Appendix (Figure A2) to the output folder using ggplot2
-
-#install.packages("ggplot2") ## Uncomment if you haven't installed ggplot2
-library(ggplot2) 
-
 ggsave(plot(mc_no_controls_IVHS,
 type = "equiv",
 ylim = c(-4,4),
@@ -142,35 +147,12 @@ cex.text = 0.8,
 
 
 
-
+################################################################
 ############# CATE Estimation using Causal Forests #############
-
-# List of package names to install
-packages_to_install <- c("grf", "dplyr", "kableExtra")
-
-# Check if each package is already installed
-for (package_name in packages_to_install) {
-  if (!(package_name %in% installed.packages())) {
-    # If not installed, install the package
-    install.packages(package_name)
-  }
-}
+################################################################
 
 
 
-# load packages
-library(dplyr)
-library(modelsummary)
-library(grf)
-
-
-
-# set seed for reproducibility
-set.seed(42)
-
-
-# read in the data
-data <- read.csv("analysis_data.csv")
 
 
 # move the two senators (sanders king) and who caucus with the Democrats to the Democratic party (per reviewer 3)
@@ -195,7 +177,7 @@ entity_id_int = as.numeric(as.factor(data$wikidata_id_int))
 
 
 # estimate the CATE using causal forests
-cf1 <- causal_forest(X, Y1_tweets, W, W.hat = 0.5, clusters = entity_id_int, num.trees = 5000)
+cf1 <- causal_forest(X, Y1_tweets, W, W.hat = 0.5, clusters = entity_id_int, num.trees = 5000, seed = 42)
 
 
 # get the variable importance
@@ -229,7 +211,7 @@ output = "tableA2.tex")
 
 
 
-# View the results using a coefficient plot ( this wasn't in the accepted article, but it is a good way to visualize the results)
+# View the results using a coefficient plot ( this wasn't in the accepted article)
 #modelplot(models, coef_omit = "Intercept",fatten = .7,size = 1) +
 # labs(x = 'Coefficient Estimate', y = 'Variable',title = 'CATE estimates Using Causal Forests') + 
 # theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -251,33 +233,6 @@ output = "tableA2.tex")
 
 
 
-# List of package names to install
-packages_to_install <- c("fect", "dplyr", "kableExtra")
-
-# Check if each package is already installed
-for (package_name in packages_to_install) {
-  if (!(package_name %in% installed.packages())) {
-    # If not installed, install the package
-    install.packages(package_name)
-  }
-}
-
-
-# load packages
-library(fect)
-library(dplyr)
-library(kableExtra)
-
-
-# set seed for reproducibility
-set.seed(44)
-
-
-# read in the data
-data <- read.csv("analysis_data.csv")
-
-
-
 ## get only the wikidata_ids of infected legislators
 infected_ids <- unique(data[data$treatment == 1, 'wikidata_id'])
 
@@ -286,44 +241,33 @@ infected_df <- data[data$wikidata_id %in% infected_ids,]
 
 
 
-# create function to use the fect package to estimate effects of infection on opposition using matrix completion. All models condition on the total number of tweets. 
-
-estimate <- function(data, formula) {
-  fect(data = data,
-       formula = formula,
-       method = "mc", ## I used MC in the text, which is more appropriate for the analysis,
-       # however fixed effects estimates are very similar and are significantly faster to compute. 
-       seed = 44,
-       index = c("entity_id", "time_id"),
-       r = c(0, 10),
-       k = 10,
-       min.T0 = 1,
-       CV = TRUE,
-       force = "two-way",
-       se = TRUE,
-       parallel = TRUE,
-       cores = 18, # adjust accordingly 
-       nboots = 300)
-}
-
-
 
 
 # Table A3, column 1: IVHS transformation of DV and no controls
 mc_no_controls_IVHS <- estimate(infected_df, 
-    asinh(opposition_tweet_count) ~ treatment + total_tweets)
+    asinh(opposition_tweet_count) ~ treatment + total_tweets,
+    seed = 44,
+    estimator = "mc")
 
 # Table A3, column 2: Log transformation of DV and no controls
 mc_no_controls_log <- estimate(infected_df, 
-    log(opposition_tweet_count+.1) ~ treatment + total_tweets)
+    log(opposition_tweet_count+.1) ~ treatment + total_tweets,
+    seed = 44,
+    estimator = "mc")
 
-# Table A3, column 3: No transformation of DV and Covid Cases (state level) as control
+# Table A3, column 3: 
+# No transformation of DV and Covid Cases (state level) as control
 mc_with_controls_covid_cases <- estimate(infected_df, 
-    opposition_tweet_count ~ treatment + total_tweets + log(covid_cases))
+    opposition_tweet_count ~ treatment + total_tweets + log(covid_cases),
+    seed = 44,
+    estimator = "mc")
 
-# Table A3, column 4: No transformation of DV and Covid Cases and Deaths (state level) as controls
+# Table A3, column 4: 
+# No transformation of DV and Covid Cases and Deaths (state level) as controls
 mc_with_controls_covid_cases_deaths <- estimate(infected_df, 
-    opposition_tweet_count ~ treatment + total_tweets + log(covid_cases) + log(covid_deaths))
+    opposition_tweet_count ~ treatment + total_tweets + log(covid_cases) + log(covid_deaths),
+    seed = 44,
+    estimator = "mc")
 
 
 # Create a table with the results
@@ -355,7 +299,13 @@ align = "c",
 col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths"), 
 caption.placement = "top") %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
-footnote(general = "Standard errors are presented in parentheses. All results presented use matrix completion methods and are estimated using the FECT library in R (Liu, Wang, Xu 2022). Models 1 and 2 use an inverse hyperbolic sine transformation and log+.1 transformation, respectively. Model 3 includes the number of COVID-19 cases per day in each legislator's constituency state. Model 4 includes the number of new cases and new deaths in each legislator's constituency state.") %>%
+footnote(general = "Standard errors are presented in parentheses. All results 
+presented use matrix completion methods and are estimated using the FECT 
+library in R (Liu, Wang, Xu 2022). Models 1 and 2 use an inverse hyperbolic 
+sine transformation and log+.1 transformation, respectively. Model 3
+ includes the number of COVID-19 cases per day in each legislator's constituency state.
+  Model 4 includes the number of new cases and new deaths in each legislator's
+   constituency state.") %>%
 save_kable("tableA3.tex") ### Save the table as a .tex file in the output folder
 
 
@@ -375,74 +325,32 @@ save_kable("tableA3.tex") ### Save the table as a .tex file in the output folder
 
 
 
-# List of package names to install
-packages_to_install <- c("fect", "dplyr", "kableExtra")
-
-# Check if each package is already installed
-for (package_name in packages_to_install) {
-  if (!(package_name %in% installed.packages())) {
-    # If not installed, install the package
-    install.packages(package_name)
-  }
-}
-
-
-# load packages
-library(fect)
-library(dplyr)
-library(kableExtra)
-
-
-# set seed for reproducibility
-set.seed(44)
-
-
-# read in the data
-data <- read.csv("analysis_data.csv")
-
-
-
-
-
-
-# create function to use the fect package to estimate effects of infection on opposition using matrix completion. All models condition on the total number of tweets. 
-
-estimate <- function(data, formula) {
-  fect(data = data,
-       formula = formula,
-       method = "mc", ## I used MC in the text, which is more appropriate for the analysis,
-       # however fixed effects estimates are very similar and are significantly faster to compute. 
-       seed = 44,
-       index = c("entity_id", "time_id"),
-       r = c(0, 10),
-       k = 10,
-       min.T0 = 1,
-       CV = TRUE,
-       force = "two-way",
-       se = TRUE,
-       parallel = TRUE,
-       cores = 18, # adjust accordingly 
-       nboots = 300)
-}
-
 
 
 
 # Table A3, column 1: IVHS transformation of DV and no controls
 mc_no_controls_IVHS <- estimate(data, 
-    asinh(total_tweets) ~ treatment)
+    asinh(total_tweets) ~ treatment,
+    seed = 44,
+    estimator = "mc")
 
 # Table A3, column 2: Log transformation of DV and no controls
 mc_no_controls_log <- estimate(data, 
-    log(total_tweets+.1) ~ treatment)
+    log(total_tweets+.1) ~ treatment,
+    seed = 44,
+    estimator = "mc")
 
 # Table A3, column 3: No transformation of DV and Covid Cases (state level) as control
 mc_with_controls_covid_cases <- estimate(data, 
-    total_tweets ~ treatment + log(covid_cases))
+    total_tweets ~ treatment + log(covid_cases),
+    seed = 44,
+    estimator = "mc")
 
 # Table A3, column 4: No transformation of DV and Covid Cases and Deaths (state level) as controls
 mc_with_controls_covid_cases_deaths <- estimate(data, 
-    total_tweets ~ treatment + log(covid_cases) + log(covid_deaths))
+    total_tweets ~ treatment + log(covid_cases) + log(covid_deaths),
+    seed = 44,
+    estimator = "mc")
 
 
 # Create a table with the results
@@ -474,7 +382,12 @@ align = "c",
 col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths"), 
 caption.placement = "top") %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
-footnote(general = "Standard errors are presented in parentheses. All results presented use matrix completion methods and are estimated using the FECT library in R (Liu, Wang, Xu 2022). Models 1 and 2 use an inverse hyperbolic sine transformation and log+.1 transformation, respectively. Model 3 includes the number of COVID-19 cases per day in each legislator's constituency state. Model 4 includes the number of new cases and new deaths in each legislator's constituency state.") %>%
+footnote(general = "Standard errors are presented in parentheses. All results presented use 
+matrix completion methods and are estimated using the FECT library in R (Liu, Wang, Xu 2022).
+ Models 1 and 2 use an inverse hyperbolic sine transformation and log+.1 transformation, 
+ respectively. Model 3 includes the number of COVID-19 cases per day in each legislator's 
+ constituency state. Model 4 includes the number of new cases and new deaths in each 
+ legislator's constituency state.") %>%
 save_kable("tableA4.tex") ### Save the table as a .tex file in the output folder
 
 
@@ -489,70 +402,33 @@ save_kable("tableA4.tex") ### Save the table as a .tex file in the output folder
 
 
 
-# List of package names to install
-packages_to_install <- c("fect", "dplyr", "kableExtra")
-
-# Check if each package is already installed
-for (package_name in packages_to_install) {
-  if (!(package_name %in% installed.packages())) {
-    # If not installed, install the package
-    install.packages(package_name)
-  }
-}
 
 
-# load packages
-library(fect)
-library(dplyr)
-library(kableExtra)
-
-
-# set seed for reproducibility
-set.seed(44)
-
-
-# read in the data
-data <- read.csv("analysis_data.csv")
-
-
-
-
-# create function to use the fect package to estimate effects of infection on opposition using matrix completion. All models condition on the total number of tweets. 
-
-estimate <- function(data, formula) {
-  fect(data = data,
-       formula = formula,
-       method = "mc", ## I used MC in the text, which is more appropriate for the analysis,
-       # however fixed effects estimates are very similar and are significantly faster to compute. 
-       seed = 44,
-       index = c("entity_id", "time_id"),
-       r = c(0, 10),
-       k = 10,
-       min.T0 = 1,
-       CV = TRUE,
-       force = "two-way",
-       se = TRUE,
-       parallel = TRUE,
-       cores = 18, # adjust accordingly 
-       nboots = 300)
-}
 
 
 # Table A3, column 1: IVHS transformation of DV and no controls
 mc_no_controls_IVHS <- estimate(data, 
-    asinh(press_releases_opposition_count) ~ treatment + press_releases_total)
+    asinh(press_releases_opposition_count) ~ treatment + press_releases_total,
+    seed = 44,
+    estimator = "mc")
 
 # Table A3, column 2: Log transformation of DV and no controls
 mc_no_controls_log <- estimate(data, 
-    log(press_releases_opposition_count+.1) ~ treatment + press_releases_total)
+    log(press_releases_opposition_count+.1) ~ treatment + press_releases_total,
+    seed = 44,
+    estimator = "mc")
 
 # Table A3, column 3: No transformation of DV and Covid Cases (state level) as control
 mc_with_controls_covid_cases <- estimate(data, 
-    press_releases_opposition_count ~ treatment + press_releases_total + log(covid_cases))
+    press_releases_opposition_count ~ treatment + press_releases_total + log(covid_cases),
+    seed = 44,
+    estimator = "mc")
 
 # Table A3, column 4: No transformation of DV and Covid Cases and Deaths (state level) as controls
 mc_with_controls_covid_cases_deaths <- estimate(data, 
-    press_releases_opposition_count ~ treatment + press_releases_total + log(covid_cases) + log(covid_deaths))
+    press_releases_opposition_count ~ treatment + press_releases_total + log(covid_cases) + log(covid_deaths),
+    seed = 44,
+    estimator = "mc")
 
 
 # Create a table with the results
@@ -585,7 +461,13 @@ align = "c",
 col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths"), 
 caption.placement = "top") %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
-footnote(general = "Standard errors are presented in parentheses. All results presented use matrix completion methods and are estimated using the FECT library in R (Liu, Wang, Xu 2022). Models 1 and 2 use an inverse hyperbolic sine transformation and log+.1 transformation, respectively. Model 3 includes the number of COVID-19 cases per day in each legislator's constituency state. Model 4 includes the number of new cases and new deaths in each legislator's constituency state.") %>%
+footnote(general = "Standard errors are presented in parentheses. All results 
+presented use matrix completion methods and are estimated using the FECT 
+library in R (Liu, Wang, Xu 2022). Models 1 and 2 use an inverse hyperbolic 
+sine transformation and log+.1 transformation, respectively. Model 3 includes 
+the number of COVID-19 cases per day in each legislator's constituency state. 
+Model 4 includes the number of new cases and new deaths in each legislator's 
+constituency state.") %>%
 save_kable("tableA5.tex") ### Save the table as a .tex file in the output folder
 
 
@@ -611,62 +493,17 @@ write.csv(estimates, 'figureA3.csv')
 
 
 
-
-# List of package names to install
-packages_to_install <- c("fect", "dplyr", "kableExtra")
-
-# Check if each package is already installed
-for (package_name in packages_to_install) {
-  if (!(package_name %in% installed.packages())) {
-    # If not installed, install the package
-    install.packages(package_name)
-  }
-}
-
-
-# load packages
-library(fect)
-library(dplyr)
-library(kableExtra)
-
-
-# set seed for reproducibility
-set.seed(42)
-
-
-
-# read in the data
-data <- read.csv("analysis_data.csv")
-
-
-
-# create function to use the fect package to estimate interactive fixed effects
-estimate <- function(data, formula) {
-  fect(data = data,
-       formula = formula,
-       method = "ife",  ## change method to "ife" to estimate interactive fixed effects
-       seed = 44,
-       index = c("entity_id", "time_id"),
-       r = c(0, 5),
-       CV = TRUE,
-       force = "two-way",
-       se = TRUE,
-       parallel = TRUE,
-       cores = 16,
-       nboots = 300)
-}
-
-
-
-
-
 # estimate interactive fixed effects without controls (Appendix H - table A7, column 1)
 ife_no_controls <- estimate(data, 
-  opposition_tweet_count ~ treatment + total_tweets)
+  opposition_tweet_count ~ treatment + total_tweets,
+  seed = 44, 
+  estimator = "ife")
 
 # estimate interactive fixed effects with controls (Appendix H - table A7, column 2)
 ife_with_controls <- estimate(data, 
-  opposition_tweet_count ~ treatment + total_tweets + log(covid_cases) + log(covid_deaths))
+  opposition_tweet_count ~ treatment + total_tweets + log(covid_cases) + log(covid_deaths),
+  seed = 44,
+  estimator = "ife")
 
 
 
@@ -717,31 +554,6 @@ save_kable("tableA7.tex") ### Save the table as a .tex file in the output folder
 
 
 
-# List of package names to install
-packages_to_install <- c("fect", "dplyr", "kableExtra")
-
-# Check if each package is already installed
-for (package_name in packages_to_install) {
-  if (!(package_name %in% installed.packages())) {
-    # If not installed, install the package
-    install.packages(package_name)
-  }
-}
-
-
-# load packages
-library(fect)
-library(dplyr)
-library(kableExtra)
-
-
-# set seed for reproducibility
-set.seed(41)
-
-# read in the data
-data <- read.csv("analysis_data.csv")
-
-
 ## get only the wikidata_ids of infected legislators
 infected_ids <- unique(data[data$treatment == 1, 'wikidata_id'])
 
@@ -750,33 +562,18 @@ infected_df <- data[data$wikidata_id %in% infected_ids,]
 
 
 
-# create function to use the fect package to estimate interactive fixed effects
-estimate <- function(data, formula) {
-  fect(data = data,
-       formula = formula,
-       method = "ife",  ## change method to "ife" to estimate interactive fixed effects
-       seed = 41,
-       index = c("entity_id", "time_id"),
-       r = c(0, 5),
-       CV = TRUE,
-       force = "two-way",
-       se = TRUE,
-       parallel = TRUE,
-       cores = 16,
-       nboots = 300)
-}
-
-
-
-
 
 # estimate interactive fixed effects without controls (Appendix H - table A8, column 1)
 ife_no_controls <- estimate(infected_df, 
-   opposition_tweet_count ~ treatment + total_tweets)
+   opposition_tweet_count ~ treatment + total_tweets,
+   seed = 41, 
+   estimator = "ife")
 
 # estimate interactive fixed effects with controls (Appendix H - table A8, column 2)
 ife_with_controls <- estimate(infected_df, 
-  opposition_tweet_count ~ treatment + total_tweets + log(covid_cases) + log(covid_deaths))
+  opposition_tweet_count ~ treatment + total_tweets + log(covid_cases) + log(covid_deaths),
+  seed = 41,
+  estimator = "ife")
 
 
 
@@ -830,61 +627,18 @@ save_kable("tableA8.tex") ### Save the table as a .tex file in the output folder
 
 
 
-# List of package names to install
-packages_to_install <- c("fect", "dplyr", "kableExtra")
-
-# Check if each package is already installed
-for (package_name in packages_to_install) {
-  if (!(package_name %in% installed.packages())) {
-    # If not installed, install the package
-    install.packages(package_name)
-  }
-}
-
-
-# load packages
-library(fect)
-library(dplyr)
-library(kableExtra)
-
-
-# set seed for reproducibility
-set.seed(42)
-
-# read in the data
-data <- read.csv("analysis_data.csv")
-
-
-
-
-
-# create function to use the fect package to estimate interactive fixed effects
-estimate <- function(data, formula) {
-  fect(data = data,
-       formula = formula,
-       method = "ife",  ## change method to "ife" to estimate interactive fixed effects
-       seed = 42,
-       index = c("entity_id", "time_id"),
-       r = c(0, 5),
-       CV = TRUE,
-       force = "two-way",
-       se = TRUE,
-       parallel = TRUE,
-       cores = 16,
-       nboots = 300)
-}
-
-
-
-
 
 # estimate interactive fixed effects without controls (Appendix H - table A9, column 1)
 ife_no_controls <- estimate(data, 
-   total_tweets ~ treatment)
+   total_tweets ~ treatment,
+   seed = 42,
+   estimator = "ife")
 
 # estimate interactive fixed effects with controls (Appendix H - table A9, column 2)
 ife_with_controls <- estimate(data, 
-  total_tweets ~ treatment + log(covid_cases) + log(covid_deaths))
+  total_tweets ~ treatment + log(covid_cases) + log(covid_deaths),
+  seed = 42,
+  estimator = "ife")
 
 
 
@@ -923,6 +677,11 @@ save_kable("tableA9.tex") ### Save the table as a .tex file in the output folder
 
 
 
+
+
+
+
+
 #####################################################
 ############### Robustness Check 7 ##################
 #### Estimation using interactive Fixed Effects #####
@@ -934,60 +693,18 @@ save_kable("tableA9.tex") ### Save the table as a .tex file in the output folder
 
 
 
-# List of package names to install
-packages_to_install <- c("fect", "dplyr", "kableExtra")
-
-# Check if each package is already installed
-for (package_name in packages_to_install) {
-  if (!(package_name %in% installed.packages())) {
-    # If not installed, install the package
-    install.packages(package_name)
-  }
-}
-
-
-# load packages
-library(fect)
-library(dplyr)
-library(kableExtra)
-
-
-# set seed for reproducibility
-set.seed(41)
-
-# read in the data
-data <- read.csv("analysis_data.csv")
-
-
-
-
-
-# create function to use the fect package to estimate interactive fixed effects
-estimate <- function(data, formula) {
-  fect(data = data,
-       formula = formula,
-       method = "ife",  ## change method to "ife" to estimate interactive fixed effects
-       seed = 41,
-       index = c("entity_id", "time_id"),
-       r = c(0, 5),
-       CV = TRUE,
-       force = "two-way",
-       se = TRUE,
-       parallel = TRUE,
-       cores = 16,
-       nboots = 300)
-}
-
-
-
 
 # estimate interactive fixed effects without controls (Appendix H - table A8, column 1)
 ife_no_controls <- estimate(infected_df, 
-   press_releases_opposition_count ~ treatment + press_releases_total)
+   press_releases_opposition_count ~ treatment + press_releases_total,
+   seed = 41,
+   estimator = "ife")
 
 # estimate interactive fixed effects with controls (Appendix H - table A8, column 2)
 ife_with_controls <- estimate(infected_df, 
-  press_releases_opposition_count ~ treatment + press_releases_total + log(covid_cases) + log(covid_deaths))
+  press_releases_opposition_count ~ treatment + press_releases_total + log(covid_cases) + log(covid_deaths),
+  seed = 41,
+  estimator = "ife")
 
 
 

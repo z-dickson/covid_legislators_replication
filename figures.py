@@ -1,14 +1,4 @@
-## function to install required packages if not already installed
-def install(package):
-    import subprocess
-    import sys
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-    
-## install required packages
-install("pandas")
-install("numpy")
-install("plotly")
-install("kaleido")
+
 
 
 # import required packages
@@ -19,7 +9,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-# create a config class to store colors and font
+# create a config class to store colors and font for all figures 
 class config: 
     colors = [ '#387da8', '#cf514e']
     font = 'Arial'
