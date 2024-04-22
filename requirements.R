@@ -3,7 +3,6 @@
 cran_mirror <- "https://cran.r-project.org"
 
 # libraries required for the analysis 
-install.packages(install_packages, repos = cran_mirror)
 install_packages <- c("fect", "dplyr", "kableExtra", "modelsummary", "ggplot2", "grf")
 
 # Install packages from the specified CRAN mirror
