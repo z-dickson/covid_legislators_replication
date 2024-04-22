@@ -24,7 +24,7 @@ class config:
 ### Alternatively, I have also saved a copy of the final data required just to make the figure, so you can skip the next cell and directly use the data from the cell after that.
 
 
-## get dates of infection for US legislators from govtrack data:  https://www.govtrack.us/covid-19
+"""## get dates of infection for US legislators from govtrack data:  https://www.govtrack.us/covid-19
 covid = pd.read_html('https://www.govtrack.us/covid-19')[0]
 
 # create a date column
@@ -50,7 +50,7 @@ c['new_infections_text'] = c['new_infections'].replace(0, np.nan)
 
 # create a text column for the new infections and cumulative infections (for the figure)
 c.loc[c.cumulative_infections==258, 'cumulative_infections_text'] = 258
-c.loc[c.cumulative_infections==136, 'cumulative_infections_text'] = 136
+c.loc[c.cumulative_infections==136, 'cumulative_infections_text'] = 136"""
 
 ################### Make figure 1 #####################
 
