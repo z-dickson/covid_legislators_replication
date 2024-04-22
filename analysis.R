@@ -40,7 +40,6 @@ estimate <- function(data, formula, seed, estimator) {
        force = "two-way",
        se = TRUE,
        parallel = TRUE,
-       cores = 18, # adjust accordingly 
        nboots = 300)
 }
 
