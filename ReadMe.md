@@ -36,7 +36,7 @@ There are eight files necessary for replication that are in the main directory:
 7. `requirements.py` - Python library requirements 
 8. `requirements.R` - R library requirements 
 
-Additionally, there are two folders with contain the individuals scripts for the analysis (`individual_files`) and all the compiled files (`compiled_files`). If these are not of interest, you can delete both folders and just compile the entire replication using the `master.py` file. Clone the repo, navigate to the new directory and run the following in your terminal: 
+Additionally, there are two folders that contain the individuals scripts for the analysis (`individual_files`) and all the compiled files (`compiled_files`). If these are not of interest, you can delete both folders and just compile the entire replication using the `master.py` file. Clone the repo, navigate to the new directory and run the following in your terminal: 
 
 ```python3 master.py```
 
