@@ -44,8 +44,11 @@ if __name__ == "__main__":
     
     try:
         run_r_script(r_file)
+        print("R analysis completed --- installing python requirements next")
         install_python_requirements(requirements_file)
+        print("python requirements installed --- running figures.py to make figures and tables next")
         run_python_script(python_file)
+        print("Python analysis (figures & tables) completed")
     except RuntimeError as e:
         print(e)  # Print the error message
         raise # break 
