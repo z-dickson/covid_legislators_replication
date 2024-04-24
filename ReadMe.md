@@ -30,7 +30,7 @@ There are eight files necessary for replication that are in the main directory:
 1. `master.py` - This file runs the entire analysis.
 2. `analysis.R` - This file runs all R code 
 3. `figures.py` - This file runs all Python code
-4. `analysis_data.csv` - The primary dataset used in the analysis
+4. `analysis_data.csv` - The primary dataset used in the analysis (a variable list is provided at the bottom)
 5. `covid_infections.csv` - The data file for COVID infections in legislators
 6. `validation_tweets.csv` - The data file for the held-out tweets used to validate the language model
 7. `py_requirements.txt` - Python library requirements 
@@ -143,6 +143,31 @@ There are several sources of data that were used, which are detailed below:
 3. The data on COVID-19 infections in legislators was collected from GovTrack ([https://www.govtrack.us/covid-19](https://www.govtrack.us/covid-19)). You can download that data from the website directly. Additionally, I provide the code in the `figures.ipynb` file to import the data directly from the website.
 
 4. The data on COVID-19 infections in the general population (at the state level) was collected from the New York Times COVID-19 data repository ([https://github.com/nytimes/covid-19-data](https://github.com/nytimes/covid-19-data)). You can download the data from the website directly.
+
+
+
+# Variable list: 
+
+
+The primary analysis file (`analysis_data.csv`) is indexed by legislator and time. Additionally, the dataset contains several variables: 
+
+
+- `entity_id` - an ID variable for each legislator
+- `time_id` - a time ID variable (an int for each two-week period)
+- `opposition_tweet_count` - the number of tweets that expressed opposition to COVID policies
+- `total_tweets` - the number of total tweets about COVID
+- `treatment` - a treatment indicator that takes the value of 1 upon infection and for four weeks (two time periods) following. The variable is 0 in all other cases 
+- `party` - political party of legislator
+- `gender` - gender of legislator 
+- `MC_birth_year` - birth year of legislator 
+- `press_releases_opposition_count` - the number of press releases that expressed opposition to COVID policies 
+- `press_releases_total` - the number of total press releases about COVID
+- `wikidata_id` - the corresponding Wikidata ID for each legislator 
+- `date` - date 
+- `state` - state of legislator's constituency 
+- `covid_cases` - number of cummulative COVID cases for the corresponding state/date (over the two week period) 
+- `covid_deaths` - number of cumulative COVID deaths for the corresponding state/date (over the two week period)
+
 
 
 

@@ -35,7 +35,7 @@ data[data$party == 'Independent', 'party'] = 'Democrat'
 
 
 # convert string variables to numeric for analysis
-data$wikidata_id_int = as.numeric(as.factor(data$wikidata_id))
+data$entity_id = as.numeric(as.factor(data$entity_id))
 data$Republican = as.numeric(data$party == 'Republican')
 data$Male = as.numeric(data$gender == 'M')
 data$Age = as.numeric(data$MC_birth_year)
@@ -48,11 +48,11 @@ data['Total tweets'] = data['total_tweets']
 Y1_tweets <- data$opposition_tweet_count
 W = data$treatment
 X = data[c('Republican', 'Male', 'Total tweets', 'Age')]
-entity_id_int = as.numeric(as.factor(data$wikidata_id_int))
+
 
 
 # estimate the CATE using causal forests
-cf1 <- causal_forest(X, Y1_tweets, W, W.hat = 0.5, clusters = entity_id_int, num.trees = 5000)
+cf1 <- causal_forest(X, Y1_tweets, W, W.hat = 0.5, clusters = entity_id, num.trees = 5000)
 
 
 # get the variable importance
