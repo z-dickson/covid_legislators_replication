@@ -34,11 +34,11 @@ set.seed(41)
 data <- read.csv("analysis_data.csv")
 
 
-## get only the wikidata_ids of infected legislators
-infected_ids <- unique(data[data$treatment == 1, 'wikidata_id'])
+## get only the entity_ids of infected legislators
+infected_ids <- unique(data[data$treatment == 1, 'entity_id'])
 
 #  filter the data to include only infected legislators
-infected_df <- data[data$wikidata_id %in% infected_ids,]
+infected_df <- data[data$entity_id %in% infected_ids,]
 
 
 

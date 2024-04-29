@@ -159,7 +159,7 @@ data[data$party == 'Independent', 'party'] = 'Democrat'
 
 
 # convert string variables to numeric for analysis
-data$wikidata_id_int = as.numeric(as.factor(data$wikidata_id))
+data$entity_id = as.numeric(as.factor(data$entity_id))
 data$Republican = as.numeric(data$party == 'Republican')
 data$Male = as.numeric(data$gender == 'M')
 data$Age = as.numeric(data$MC_birth_year)
@@ -172,7 +172,7 @@ data['Total tweets'] = data['total_tweets']
 Y1_tweets <- data$opposition_tweet_count
 W = data$treatment
 X = data[c('Republican', 'Male', 'Total tweets', 'Age')]
-entity_id_int = as.numeric(as.factor(data$wikidata_id_int))
+entity_id_int = as.numeric(as.factor(data$entity_id))
 
 
 # estimate the CATE using causal forests
@@ -232,11 +232,11 @@ output = "tableA2.tex")
 
 
 
-## get only the wikidata_ids of infected legislators
-infected_ids <- unique(data[data$treatment == 1, 'wikidata_id'])
+## get only the entity_ids of infected legislators
+infected_ids <- unique(data[data$treatment == 1, 'entity_id'])
 
 #  filter the data to include only infected legislators
-infected_df <- data[data$wikidata_id %in% infected_ids,]
+infected_df <- data[data$entity_id %in% infected_ids,]
 
 
 
@@ -553,11 +553,11 @@ save_kable("tableA7.tex") ### Save the table as a .tex file in the output folder
 
 
 
-## get only the wikidata_ids of infected legislators
-infected_ids <- unique(data[data$treatment == 1, 'wikidata_id'])
+## get only the entity_ids of infected legislators
+infected_ids <- unique(data[data$treatment == 1, 'entity_id'])
 
 #  filter the data to include only infected legislators
-infected_df <- data[data$wikidata_id %in% infected_ids,]
+infected_df <- data[data$entity_id %in% infected_ids,]
 
 
 
