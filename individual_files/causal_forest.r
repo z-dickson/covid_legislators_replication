@@ -48,11 +48,11 @@ data['Total tweets'] = data['total_tweets']
 Y1_tweets <- data$opposition_tweet_count
 W = data$treatment
 X = data[c('Republican', 'Male', 'Total tweets', 'Age')]
-
+entity_id_int = as.numeric(as.factor(data$entity_id))
 
 
 # estimate the CATE using causal forests
-cf1 <- causal_forest(X, Y1_tweets, W, W.hat = 0.5, clusters = entity_id, num.trees = 5000)
+cf1 <- causal_forest(X, Y1_tweets, W, W.hat = 0.5, clusters = entity_id_int, num.trees = 5000)
 
 
 # get the variable importance
@@ -71,18 +71,13 @@ results_tweets = best_linear_projection(cf1, X[ranked.vars[1:4]])
 models <- list('Opposition Tweets'= results_tweets)
 
 
-
 ## save the results to a table (Table A2)
 modelsummary(models, 
-fmt = 1,
-coef_omit = "Intercept",
-statistic = c("conf.int",
-"s.e. = {std.error}", 
-"t = {statistic}",
-"p = {p.value}"), 
-stars = TRUE, 
-digits = 3,
-output = "tableA2.tex")
+             fmt = 5,
+             coef_omit = "Intercept",
+             stars = TRUE, 
+             digits = 3,
+             output = "tableA2.tex")
 
 
 

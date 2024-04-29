@@ -198,15 +198,11 @@ models <- list('Opposition Tweets'= results_tweets)
 
 ## save the results to a table (Table A2)
 modelsummary(models, 
-fmt = 1,
-coef_omit = "Intercept",
-statistic = c("conf.int",
-"s.e. = {std.error}", 
-"t = {statistic}",
-"p = {p.value}"), 
-stars = TRUE, 
-digits = 3,
-output = "tableA2.tex")
+             fmt = 5,
+             coef_omit = "Intercept",
+             stars = TRUE, 
+             digits = 3,
+             output = "tableA2.tex")
 
 
 
