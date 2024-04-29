@@ -162,7 +162,6 @@ The primary analysis file (`analysis_data.csv`) is indexed by legislator and tim
 - `MC_birth_year` - birth year of legislator 
 - `press_releases_opposition_count` - the number of press releases that expressed opposition to COVID policies 
 - `press_releases_total` - the number of total press releases about COVID
-- `wikidata_id` - the corresponding Wikidata ID for each legislator 
 - `date` - date 
 - `state` - state of legislator's constituency 
 - `covid_cases` - number of cummulative COVID cases for the corresponding state/date (over the two week period) 

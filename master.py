@@ -43,6 +43,7 @@ if __name__ == "__main__":
     
     
     try:
+        print("Running analysis in analysis.R")
         run_r_script(r_file)
         print("R analysis completed --- installing python requirements next")
         install_python_requirements(requirements_file)
