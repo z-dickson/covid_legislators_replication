@@ -23,6 +23,7 @@ set.seed(42)
 data <- read.csv("analysis_data.csv")
 
 
+
 # create function to use the fect package to estimate effects of infection on 
 # opposition using matrix completion. All models condition on the total number of tweets. 
 
@@ -100,8 +101,7 @@ booktabs = TRUE,
 caption = "Cumulative effects (ATT) of COVID-19 Infection on Opposition to COVID-19 Policies",
 digits = 3,
 align = "c",
-col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths"), 
-caption.placement = "top") %>%
+col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths")) %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
 footnote(general = "Standard errors are presented in parentheses. All results 
 presented use matrix completion methods and are estimated using the FECT 
@@ -291,8 +291,7 @@ booktabs = TRUE,
 caption = "Estimation with Infected Legislators Only",
 digits = 3,
 align = "c",
-col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths"), 
-caption.placement = "top") %>%
+col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths")) %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
 footnote(general = "Standard errors are presented in parentheses. All results 
 presented use matrix completion methods and are estimated using the FECT 
@@ -374,8 +373,7 @@ booktabs = TRUE,
 caption = "Effect of COVID-19 Infection on Total Tweets",
 digits = 3,
 align = "c",
-col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths"), 
-caption.placement = "top") %>%
+col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths")) %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
 footnote(general = "Standard errors are presented in parentheses. All results presented use 
 matrix completion methods and are estimated using the FECT library in R (Liu, Wang, Xu 2022).
@@ -453,8 +451,7 @@ booktabs = TRUE,
 caption = "ATT Estimates -- Opposition Messages in Press Releases",
 digits = 3,
 align = "c",
-col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths"), 
-caption.placement = "top") %>%
+col.names = c("IVHS", "Log", "Covid Cases", "w/ Cases and Deaths")) %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
 footnote(general = "Standard errors are presented in parentheses. All results 
 presented use matrix completion methods and are estimated using the FECT 
@@ -528,8 +525,7 @@ booktabs = TRUE,
 caption = "Effects of COVID-19 Infection on Opposition to COVID -- Full sample",
 digits = 3,
 align = "c",
-col.names = c("without controls", "with controls"), 
-caption.placement = "top") %>%
+col.names = c("without controls", "with controls")) %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
 footnote(general = "Standard errors presented in parentheses. Model 1 uses interactive fixed effects without controls and Model 2 uses interactive fixed effects with controls. Estimations rely on the Fect library in R.") %>%
 save_kable("tableA7.tex") ### Save the table as a .tex file in the output folder
@@ -597,8 +593,7 @@ booktabs = TRUE,
 caption = "Effects of Infection on Infected Legislators Only",
 digits = 3,
 align = "c",
-col.names = c("without controls", "with controls"), 
-caption.placement = "top") %>%
+col.names = c("without controls", "with controls")) %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
 footnote(general = "Standard errors presented in parentheses. Model 1 uses interactive fixed effects without controls and Model 2 uses interactive fixed effects with controls. Estimations rely on the Fect library in R.") %>%
 save_kable("tableA8.tex") ### Save the table as a .tex file in the output folder
@@ -663,8 +658,7 @@ booktabs = TRUE,
 caption = "Effects of Infection on Total Number of Tweets",
 digits = 3,
 align = "c",
-col.names = c("without controls", "with controls"), 
-caption.placement = "top") %>%
+col.names = c("without controls", "with controls")) %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
 footnote(general = "Standard errors presented in parentheses. Model 1 uses interactive fixed effects without controls and Model 2 uses interactive fixed effects with controls. Estimations rely on the Fect library in R.") %>%
 save_kable("tableA9.tex") ### Save the table as a .tex file in the output folder
@@ -729,8 +723,7 @@ booktabs = TRUE,
 caption = "Effects of Infection on Opposition using Press releases",
 digits = 3,
 align = "c",
-col.names = c("without controls", "with controls"), 
-caption.placement = "top") %>%
+col.names = c("without controls", "with controls")) %>%
 kable_styling(latex_options = c("hold_position", "scale_down")) %>%
 footnote(general = "Standard errors presented in parentheses. Model 1 uses interactive fixed effects without controls and Model 2 uses interactive fixed effects with controls. Estimations rely on the Fect library in R.") %>%
 save_kable("tableA10.tex") ### Save the table as a .tex file in the output folder

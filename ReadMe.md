@@ -70,6 +70,9 @@ Additionally, there are two folders that contain the individuals scripts for the
 
 ## Files in the `compiled_files` folder:
 
+### Article Manuscript 
+- `article.pdf` is the accepted version of the manusript
+
 
 ### Tables 
 

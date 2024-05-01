@@ -2,6 +2,7 @@ import subprocess
 import time
 import os 
 
+
 def run_r_script(r_file):
     r_reqs = subprocess.run(['Rscript', 'requirements.R'], capture_output=True, text=True)
     if r_reqs.returncode != 0:
@@ -35,13 +36,10 @@ def install_python_requirements(requirements_file):
 
 if __name__ == "__main__":
     start_time = time.time()  # Record the start time
-    
     # Run your R and Python scripts
     r_file = "analysis.R"
     python_file = "figures.py"
     requirements_file = "py_requirements.txt"  # Path to your requirements file
-    
-    
     try:
         print("Running analysis in analysis.R")
         run_r_script(r_file)
