@@ -1,21 +1,6 @@
----
-subtitle: "Replication Instructions"
-title: "The Effects of COVID-19 Infection on Opposition to COVID-19 Policies: Evidence from the U.S. Congress"
-author: Zach Dickson (LSE) and T. Murat Yildirim (Stavanger)
-date: "2024-04-21"
-format:
-  pdf:
-    toc: false 
-    number-sections: false
-    colorlinks: true
-    highlight-style: github
-    keep-tex: false
----
+# Replication for: *The Effects of COVID-19 Infection on Opposition to COVID-19 Policies: Evidence from the U.S. Congress*
 
 
-
-**Replication files for:** 
-*The Effects of COVID-19 Infection on Opposition to COVID-19 Policies: Evidence from the U.S. Congress*
 
 **Authors:** Zach Dickson (LSE) and T. Murat Yildirim (Stavanger)
 
